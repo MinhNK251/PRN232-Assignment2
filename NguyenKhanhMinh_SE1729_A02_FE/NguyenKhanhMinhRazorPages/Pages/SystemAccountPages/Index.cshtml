@@ -1,0 +1,63 @@
+﻿@page
+@model NguyenKhanhMinhRazorPages.Pages.SystemAccountPages.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    String userName = HttpContext.Session.GetString("UserName") ?? "Guest";
+    String role = HttpContext.Session.GetString("UserRole");
+    if (!("0").Equals(role))
+    {
+        Response.Redirect("/NotPermission");
+    }
+}
+<h2>Welcome, @userName!</h2>
+<h1>System Account Management</h1>
+
+<p>
+    <a asp-page="Create">Create New</a> |
+    <a asp-page="/NewsArticlePages/NewsReport">News Report</a> |
+    <a asp-page="/Logout">Log out</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SystemAccount[0].AccountName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SystemAccount[0].AccountEmail)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SystemAccount[0].AccountRole)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SystemAccount[0].AccountPassword)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.SystemAccount) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.AccountName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AccountEmail)
+            </td>
+            <td>
+                @(item.AccountRole == 1 ? "Staff" : item.AccountRole == 2 ? "Lecturer" : "Unknown")
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AccountPassword)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.AccountId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.AccountId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.AccountId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

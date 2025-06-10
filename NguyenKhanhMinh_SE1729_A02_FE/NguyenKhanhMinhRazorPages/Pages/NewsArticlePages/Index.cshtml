@@ -1,0 +1,216 @@
+﻿@page
+@model NguyenKhanhMinhRazorPages.Pages.NewsArticlePages.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    String userName = HttpContext.Session.GetString("UserName") ?? "Guest";
+    String role = HttpContext.Session.GetString("UserRole");
+    if (role != null && ("1").Equals(role))
+    {
+        <h2>Welcome, @userName!</h2>
+        <h1>News Article Management</h1>
+        <p>
+            <a asp-page="Create">Create New</a> |
+            <a asp-page="/CategoryPages/Index">Manage Category</a> |
+            <a asp-page="/TagPages/Index">Manage Tag</a>            
+        </p>
+        <p>
+            <a asp-page="/SystemAccountPages/Profile" asp-route-returnUrl="/NewsArticlePages/Index">Go to Profile</a> |
+            <a asp-page="./History">View Created History</a> |
+            <a asp-page="/Logout">Log out</a>
+        </p>
+        <form method="get">
+            <input type="text" id="searchTitle" name="searchTitle" placeholder="Search by title" value="@Model.SearchTitle" />
+            <button type="submit">Search</button>
+        </form>
+    }
+    else
+    {
+        <input type="hidden" id="searchTitle" name="searchTitle" placeholder="Search by title" value="@Model.SearchTitle" />
+        <h2>Welcome, @userName!</h2>
+        <h1>News Article List</h1>
+        <p>
+            <a asp-page="/Logout">Log out</a>
+        </p>
+    }
+}
+<input type="hidden" id="userRole" value="@role" />
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NewsArticle[0].NewsTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NewsArticle[0].Headline)
+            </th>            
+            <th>
+                @Html.DisplayNameFor(model => model.NewsArticle[0].Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NewsArticle[0].Tags)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NewsArticle[0].NewsSource)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NewsArticle[0].NewsStatus)
+            </th>            
+            <th>
+                @Html.DisplayNameFor(model => model.NewsArticle[0].CreatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NewsArticle[0].ModifiedDate)
+            </th>            
+            <th>
+                @Html.DisplayNameFor(model => model.NewsArticle[0].CreatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NewsArticle[0].UpdatedBy)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id ="tableBody">
+        @foreach (var item in Model.NewsArticle) 
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NewsTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Headline)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                </td>
+                <td>
+                    @if (item.Tags != null && item.Tags.Any())
+                    {
+                        <ul>
+                            @foreach (var tag in item.Tags)
+                            {
+                                <li>@tag.TagName</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>No Tag available</p>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NewsSource)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NewsStatus)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ModifiedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedBy.AccountName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UpdatedBy.AccountName)
+                </td>
+                @if (("1").Equals(role))
+                {
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@item.NewsArticleId">Edit</a> |
+                        <a asp-page="./Details" asp-route-id="@item.NewsArticleId">Details</a> |
+                        <a asp-page="./Delete" asp-route-id="@item.NewsArticleId">Delete</a>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <a asp-page="./Details" asp-route-id="@item.NewsArticleId">Details</a>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Check if the table is empty
+            if ($("#tableBody tr").length === 0) {
+                loadArticles();
+            }
+        });
+
+        function loadArticles() {
+            const searchTitle = $("#searchTitle").val();
+            
+            $.ajax({
+                url: '?handler=LoadData',
+                data: { searchTitle: searchTitle },
+                type: 'GET',
+                contentType: 'application/json',
+                success: function (result) {
+                    if (result.articles && result.articles.length > 0) {
+                        populateTable(result.articles);
+                    } else {
+                        $("#tableBody").html("<tr><td colspan='11'>No articles found</td></tr>");
+                    }
+                },
+                error: function (error) {
+                    console.error("Error loading articles:", error);
+                    $("#tableBody").html("<tr><td colspan='11'>Error loading articles</td></tr>");
+                }
+            });
+        }
+
+        function populateTable(articles) {
+            let tableContent = '';
+            const userRole = $("#userRole").val();
+            
+            articles.forEach(function(article) {
+                const categoryName = article.category ? article.category.categoryName : "N/A";
+                const createdBy = article.createdBy ? article.createdBy.accountName : "N/A";
+                const updatedBy = article.updatedBy ? article.updatedBy.accountName : "N/A";
+                
+                let tagsHtml = "";
+                if (article.tags && article.tags.length > 0) {
+                    tagsHtml = "<ul>";
+                    article.tags.forEach(function(tag) {
+                        tagsHtml += `<li>${tag.tagName}</li>`;
+                    });
+                    tagsHtml += "</ul>";
+                } else {
+                    tagsHtml = "<p>No Tag available</p>";
+                }
+                
+                tableContent += `<tr>
+                    <td>${article.newsTitle || "undefined"}</td>
+                    <td>${article.headline || "undefined"}</td>
+                    <td>${categoryName}</td>
+                    <td>${tagsHtml}</td>
+                    <td>${article.newsSource || "undefined"}</td>
+                    <td>${article.newsStatus || "false"}</td>
+                    <td>${article.createdDate || "undefined"}</td>
+                    <td>${article.modifiedDate || "undefined"}</td>
+                    <td>${createdBy}</td>
+                    <td>${updatedBy}</td>
+                    <td>
+                        ${userRole === "1"
+                        ? `<a href="./NewsArticlePages/Edit?id=${article.newsArticleId}">Edit</a> | 
+                           <a href="./NewsArticlePages/Details?id=${article.newsArticleId}">Details</a> | 
+                           <a href="./NewsArticlePages/Delete?id=${article.newsArticleId}">Delete</a>`
+                        : `<a href="./NewsArticlePages/Details?id=${article.newsArticleId}">Details</a>`
+                        }
+                    </td>
+                </tr>`;
+            });
+            
+            $("#tableBody").html(tableContent);
+        }
+    </script>
+}

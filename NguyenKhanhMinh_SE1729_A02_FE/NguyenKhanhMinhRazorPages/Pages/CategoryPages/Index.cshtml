@@ -1,0 +1,67 @@
+﻿@page
+@model NguyenKhanhMinhRazorPages.Pages.CategoryPages.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    String userName = HttpContext.Session.GetString("UserName") ?? "Guest";
+    String role = HttpContext.Session.GetString("UserRole");
+    if (!("1").Equals(role))
+    {
+        Response.Redirect("/NotPermission");
+    }
+}
+<h2>Welcome, @userName!</h2>
+<h1>Category Management</h1>
+
+<p>
+    <a asp-page="Create">Create New</a> |
+    <a asp-page="/NewsArticlePages/Index">Manage Article</a> |
+    <a asp-page="/TagPages/Index">Manage Tag</a>
+</p>
+<p>
+    <a asp-page="/SystemAccountPages/Profile" asp-route-returnUrl="/CategoryPages/Index">Go to Profile</a> |
+    <a asp-page="/Logout">Log out</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Category[0].CategoryName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category[0].CategoryDesciption)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category[0].IsActive)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category[0].ParentCategory)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Category) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CategoryName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CategoryDesciption)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsActive)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ParentCategory.CategoryName)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.CategoryId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.CategoryId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.CategoryId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

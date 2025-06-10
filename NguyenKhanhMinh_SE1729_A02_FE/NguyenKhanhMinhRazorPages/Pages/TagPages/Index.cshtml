@@ -1,0 +1,73 @@
+﻿@page
+@model NguyenKhanhMinhRazorPages.Pages.TagPages.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    String userName = HttpContext.Session.GetString("UserName") ?? "Guest";
+    String role = HttpContext.Session.GetString("UserRole");
+    if (!("1").Equals(role))
+    {
+        Response.Redirect("/NotPermission");
+    }
+}
+<h2>Welcome, @userName!</h2>
+<h1>Tag Management</h1>
+
+<p>
+    <a asp-page="Create">Create New</a> |
+    <a asp-page="/NewsArticlePages/Index">Manage Article</a> |
+    <a asp-page="/CategoryPages/Index">Manage Category</a>    
+</p>
+<p>
+    <a asp-page="/SystemAccountPages/Profile" asp-route-returnUrl="/TagPages/Index">Go to Profile</a> |
+    <a asp-page="/Logout">Log out</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tag[0].TagName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tag[0].Note)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tag[0].NewsArticles)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Tag) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TagName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Note)
+            </td>
+            <td>
+            @if (item.NewsArticles != null && item.NewsArticles.Any())
+                {
+                    <ul>
+                        @foreach (var news in item.NewsArticles)
+                        {
+                            <li>@news.NewsTitle</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>No News Article available</p>
+                }
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.TagId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.TagId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.TagId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
