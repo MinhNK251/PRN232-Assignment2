@@ -1,7 +1,10 @@
-﻿namespace BusinessObjectsLayer.Entity;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BusinessObjectsLayer.Entity;
 
 public partial class Category
 {
+    [Key]
     public short CategoryId { get; set; }
 
     public string CategoryName { get; set; } = null!;

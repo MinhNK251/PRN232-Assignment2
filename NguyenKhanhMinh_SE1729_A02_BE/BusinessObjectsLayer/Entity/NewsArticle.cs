@@ -1,7 +1,10 @@
-﻿namespace BusinessObjectsLayer.Entity;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BusinessObjectsLayer.Entity;
 
 public partial class NewsArticle
 {
+    [Key]
     public string NewsArticleId { get; set; } = null!;
 
     public string? NewsTitle { get; set; }

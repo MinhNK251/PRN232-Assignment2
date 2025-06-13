@@ -1,7 +1,10 @@
-﻿namespace BusinessObjectsLayer.Entity;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BusinessObjectsLayer.Entity;
 
 public partial class SystemAccount
 {
+    [Key]
     public short AccountId { get; set; }
 
     public string? AccountName { get; set; }
