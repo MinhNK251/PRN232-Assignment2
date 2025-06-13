@@ -9,6 +9,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
 builder.Services.AddSession();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient<ISystemAccountService, SystemAccountService>();
 builder.Services.AddHttpClient<ICategoryService, CategoryService>();
 builder.Services.AddHttpClient<ITagService, TagService>();

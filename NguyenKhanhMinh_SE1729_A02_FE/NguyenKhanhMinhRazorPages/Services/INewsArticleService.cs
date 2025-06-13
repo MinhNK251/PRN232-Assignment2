@@ -1,5 +1,5 @@
-﻿using BusinessObjectsLayer.DTO;
-using BusinessObjectsLayer.Entity;
+﻿using NguyenKhanhMinhRazorPages.DTOs;
+using NguyenKhanhMinhRazorPages.Entity;
 
 namespace NguyenKhanhMinhRazorPages.Services
 {

@@ -1,4 +1,4 @@
-﻿using BusinessObjectsLayer.Entity;
+﻿using NguyenKhanhMinhRazorPages.Entity;
 
 namespace NguyenKhanhMinhRazorPages.Services
 {

@@ -1,6 +1,6 @@
-﻿using BusinessObjectsLayer.DTO;
-using BusinessObjectsLayer.Entity;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
+using NguyenKhanhMinhRazorPages.DTOs;
+using NguyenKhanhMinhRazorPages.Entity;
 
 namespace NguyenKhanhMinhRazorPages.Services
 {
@@ -12,6 +12,6 @@ namespace NguyenKhanhMinhRazorPages.Services
         Task AddAccount(SystemAccount account);
         Task UpdateAccount(SystemAccount updatedAccount);
         Task RemoveAccount(short accountId);
-        Task<SystemAccount?> Login(LoginDto loginDTO);
+        Task<AccountResponseDto?> Login(AccountRequestDto loginDTO);
     }
 }

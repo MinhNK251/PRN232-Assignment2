@@ -1,4 +1,4 @@
-﻿using BusinessObjectsLayer.Entity;
+﻿using NguyenKhanhMinhRazorPages.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
