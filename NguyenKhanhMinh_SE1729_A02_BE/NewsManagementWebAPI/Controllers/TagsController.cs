@@ -1,14 +1,17 @@
 ﻿using Azure;
 using BusinessObjectsLayer.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 using ServiceLayer;
 
 namespace NewsManagementWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TagsController : ControllerBase
+    public class TagsController : ODataController
     {
         private readonly ITagService _service;
 
@@ -18,6 +21,8 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/Tags
+        [EnableQuery]
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet]
         public ActionResult<IEnumerable<Tag>> GetTags()
         {
@@ -26,6 +31,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/Tags/by-ids
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet("by-ids")]
         public ActionResult<List<Tag>> GetTagsByIds([FromBody] List<int> tagIds)
         {
@@ -34,6 +40,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/Tags/news/{newsId}
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet("article/{articleId}")]
         public ActionResult<List<Tag>> GetTagsByNewsArticleId(string articleId)
         {
@@ -42,6 +49,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/Tags/5
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet("{id}")]
         public ActionResult<Tag> GetTagById(int id)
         {
@@ -54,6 +62,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // PUT: api/Tags/5
+        [Authorize(Policy = "StaffOnly")]
         [HttpPut]
         public IActionResult PutTag(Tag tag)
         {
@@ -70,6 +79,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // POST: api/Tags
+        [Authorize(Policy = "StaffOnly")]
         [HttpPost]
         public ActionResult<Tag> PostTag(Tag tag)
         {
@@ -78,6 +88,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // DELETE: api/Tags/5
+        [Authorize(Policy = "StaffOnly")]
         [HttpDelete("{id}")]
         public IActionResult DeleteTag(int id)
         {
@@ -92,6 +103,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // DELETE: api/Tags/{id}/articles
+        [Authorize(Policy = "StaffOnly")]
         [HttpDelete("{id}/articles")]
         public IActionResult RemoveArticlesByTagId(int id)
         {;

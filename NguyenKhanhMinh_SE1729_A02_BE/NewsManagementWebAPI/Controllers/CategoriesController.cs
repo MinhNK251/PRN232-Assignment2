@@ -2,12 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using BusinessObjectsLayer.Entity;
 using ServiceLayer;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace NewsManagementWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController : ControllerBase
+    public class CategoriesController : ODataController
     {
         private readonly ICategoryService _service;
 
@@ -17,6 +20,8 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/Categories
+        [EnableQuery]
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet]
         public ActionResult<IEnumerable<Category>> GetCategories()
         {
@@ -25,6 +30,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/Categories/active
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet("active")]
         public ActionResult<IEnumerable<Category>> GetActiveCategories()
         {
@@ -34,6 +40,7 @@ namespace NewsManagementWebAPI.Controllers
 
 
         // GET: api/Categories/5
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet("{id}")]
         public ActionResult<Category> GetCategory(short id)
         {
@@ -46,6 +53,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // PUT: api/Categories/5
+        [Authorize(Policy = "StaffOnly")]
         [HttpPut]
         public IActionResult PutCategory(Category category)
         {
@@ -54,6 +62,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // POST: api/Categories
+        [Authorize(Policy = "StaffOnly")]
         [HttpPost]
         public ActionResult<Category> PostCategory(Category category)
         {
@@ -62,6 +71,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // DELETE: api/Categories/5
+        [Authorize(Policy = "StaffOnly")]
         [HttpDelete("{id}")]
         public IActionResult DeleteCategory(short id)
         {

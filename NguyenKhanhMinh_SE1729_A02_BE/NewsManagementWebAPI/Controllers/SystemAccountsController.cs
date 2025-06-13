@@ -2,13 +2,20 @@
 using ServiceLayer;
 using BusinessObjectsLayer.Entity;
 using Microsoft.Extensions.Options;
-using BusinessObjectsLayer.DTO;
+using NewsManagementWebAPI.DTOs;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace NewsManagementWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SystemAccountsController : ControllerBase
+    public class SystemAccountsController : ODataController
     {
         private readonly ISystemAccountService _context;
         private readonly IOptions<AdminAccountSettings> _adminAccountSettings;
@@ -20,6 +27,8 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/SystemAccounts
+        [EnableQuery]
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet]
         public ActionResult<IEnumerable<SystemAccount>> GetSystemAccounts()
         {
@@ -28,6 +37,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/SystemAccounts/5
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet("{id}")]
         public ActionResult<SystemAccount> GetSystemAccount(short id)
         {
@@ -42,6 +52,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/SystemAccounts/email
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet("email")]
         public ActionResult<SystemAccount> GetSystemAccountByEmail([FromQuery] String email)
         {
@@ -56,6 +67,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // PUT: api/SystemAccounts
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpPut]
         public IActionResult PutSystemAccount(SystemAccount systemAccount)
         {
@@ -64,6 +76,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // POST: api/SystemAccounts
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         public ActionResult<SystemAccount> PostSystemAccount(SystemAccount systemAccount)
         {
@@ -77,6 +90,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // DELETE: api/SystemAccounts/5
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete("{id}")]
         public IActionResult DeleteSystemAccount(short id)
         {
@@ -92,16 +106,61 @@ namespace NewsManagementWebAPI.Controllers
 
         // POST: api/SystemAccounts
         [HttpPost("login")]
-        public ActionResult<SystemAccount?> Login([FromBody] LoginDto dto)
+        public async Task<ActionResult> Login([FromBody] AccountRequestDto loginDTO)
         {
-            var account = _context.Login(dto.Email, dto.Password, _adminAccountSettings);
+            // Post Login Request Body
 
-            if (account == null)
+            //{
+            //    "email": "admin@CosmeticsDB.info",
+            //    "password": "@1"
+            //}
+
+            try
             {
-                return NotFound();
-            }
+                var account = _context.Login(loginDTO.Email, loginDTO.Password, _adminAccountSettings);
+                if (account == null)
+                {
+                    return Unauthorized("Invalid email or password.");
+                }
 
-            return Ok(account);
+                IConfiguration configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", true, true).Build();
+
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Email, account.AccountEmail),
+                    new Claim("Role", account.AccountRole.ToString()),
+                    new Claim("AccountId", account.AccountId.ToString()),
+                };
+
+                var symetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"]));
+                var signCredential = new SigningCredentials(symetricKey, SecurityAlgorithms.HmacSha256);
+
+                var preparedToken = new JwtSecurityToken(
+                    issuer: configuration["JWT:Issuer"],
+                    audience: configuration["JWT:Audience"],
+                    claims: claims,
+                    expires: DateTime.Now.AddMinutes(16),
+                    signingCredentials: signCredential);
+
+                var generatedToken = new JwtSecurityTokenHandler().WriteToken(preparedToken);
+                var role = account.AccountRole;
+                var accountId = account.AccountId.ToString();
+
+                return Ok(new AccountResponseDto
+                {
+                    UserEmail = account.AccountEmail,
+                    UserName = account.AccountName,
+                    Role = role,
+                    Token = generatedToken,
+                    AccountId = accountId
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }

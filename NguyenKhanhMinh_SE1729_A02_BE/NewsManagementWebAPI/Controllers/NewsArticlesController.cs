@@ -2,13 +2,16 @@
 using BusinessObjectsLayer.Entity;
 using ServiceLayer;
 using Microsoft.Extensions.Logging;
-using BusinessObjectsLayer.DTO;
+using NewsManagementWebAPI.DTOs;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NewsManagementWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class NewsArticlesController : ControllerBase
+    public class NewsArticlesController : ODataController
     {
         private readonly INewsArticleService _service;
         private readonly ITagService _tagService;
@@ -22,6 +25,8 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/NewsArticles
+        [EnableQuery]
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet]
         public ActionResult<IEnumerable<NewsArticle>> GetNewsArticles()
         {
@@ -31,6 +36,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/NewsArticles/CreatedBy
+        [Authorize(Policy = "StaffOnly")]
         [HttpGet("created-by/{userId}")]
         public ActionResult<IEnumerable<NewsArticle>> GetNewsArticlesCreatedBy(int userId)
         {
@@ -40,6 +46,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/NewsArticles/active
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet("active")]
         public ActionResult<IEnumerable<NewsArticle>> GetActiveNewsArticles()
         {
@@ -49,6 +56,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/NewsArticles/by-tag/5
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet("by-tag/{tagId}")]
         public ActionResult<IEnumerable<NewsArticle>> GetArticlesByTagId(int tagId)
         {
@@ -58,6 +66,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/NewsArticles/by-date-range
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet("by-date-range")]
         public ActionResult<IEnumerable<NewsArticle>> GetNewsArticlesByDateRange([FromQuery] DateRangeDto range)
         {
@@ -74,6 +83,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // GET: api/NewsArticles/5
+        [Authorize(Policy = "AdminOrStaffOrLecturer")]
         [HttpGet("{id}")]
         public ActionResult<NewsArticle> GetNewsArticle(string id)
         {
@@ -90,6 +100,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // PUT: api/NewsArticles/5
+        [Authorize(Policy = "StaffOnly")]
         [HttpPut("{id}")]
         public ActionResult<NewsArticle> PutNewsArticle(String id, [FromBody] NewsArticleDto dto)
         {
@@ -114,6 +125,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // POST: api/NewsArticles
+        [Authorize(Policy = "StaffOnly")]
         [HttpPost]
         public ActionResult<NewsArticle> PostNewsArticle([FromBody] NewsArticleDto dto)
         {
@@ -139,6 +151,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // DELETE: api/NewsArticles/5
+        [Authorize(Policy = "StaffOnly")]
         [HttpDelete("{id}")]
         public IActionResult DeleteNewsArticle(string id)
         {
@@ -162,6 +175,7 @@ namespace NewsManagementWebAPI.Controllers
         }
 
         // DELETE: api/NewsArticles/{id}/tags
+        [Authorize(Policy = "StaffOnly")]
         [HttpDelete("{id}/tags")]
         public IActionResult RemoveTagsByArticleId(string id)
         {
