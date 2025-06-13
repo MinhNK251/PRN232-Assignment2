@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BusinessObjectsLayer.Entity;
-using DAOsLayer;
 using Microsoft.AspNetCore.SignalR;
 using NguyenKhanhMinhRazorPages.Services;
-using BusinessObjectsLayer.DTO;
+using NguyenKhanhMinhRazorPages.Entity;
+using NguyenKhanhMinhRazorPages.DTOs;
 
 namespace NguyenKhanhMinhRazorPages.Pages.NewsArticlePages
 {

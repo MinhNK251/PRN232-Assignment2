@@ -1,12 +1,7 @@
-using BusinessObjectsLayer.Entity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Options;
 using NguyenKhanhMinhRazorPages.Services;
-using RepositoriesLayer;
-using System.Text.Json;
-using System.Text;
-using BusinessObjectsLayer.DTO;
+using NguyenKhanhMinhRazorPages.DTOs;
 
 namespace NguyenKhanhMinhRazorPages.Pages
 {
@@ -39,7 +34,7 @@ namespace NguyenKhanhMinhRazorPages.Pages
                 return Page();
             }
 
-            LoginDto requestBody = new LoginDto
+            AccountRequestDto requestBody = new AccountRequestDto
             {
                 Email = this.Email,
                 Password = this.Password
@@ -47,13 +42,14 @@ namespace NguyenKhanhMinhRazorPages.Pages
             var response = await _accountService.Login(requestBody);
             if (response != null)
             {
-                HttpContext.Session.SetString("UserEmail", response.AccountEmail);
-                HttpContext.Session.SetString("UserRole", response.AccountRole.ToString());
-                HttpContext.Session.SetString("UserName", response.AccountName);
+                HttpContext.Session.SetString("JWToken", response.Token);
+                HttpContext.Session.SetString("UserEmail", response.UserEmail);
+                HttpContext.Session.SetString("UserName", response.UserName);
+                HttpContext.Session.SetString("UserRole", response.Role.ToString());
                 HttpContext.Session.SetString("AccountId", response.AccountId.ToString());
 
                 // Redirect by role
-                return response.AccountRole == 0
+                return response.Role == 0
                     ? RedirectToPage("/SystemAccountPages/Index")
                     : RedirectToPage("/NewsArticlePages/Index");
             }

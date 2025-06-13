@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using BusinessObjectsLayer.Entity;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NguyenKhanhMinhRazorPages.Services;
+using NguyenKhanhMinhRazorPages.Entity;
 
 namespace NguyenKhanhMinhRazorPages.Pages.NewsArticlePages
 {

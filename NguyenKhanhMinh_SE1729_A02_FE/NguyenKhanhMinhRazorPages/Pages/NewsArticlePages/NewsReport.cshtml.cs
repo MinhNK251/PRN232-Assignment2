@@ -1,10 +1,8 @@
-using BusinessObjectsLayer.DTO;
-using BusinessObjectsLayer.Entity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using NguyenKhanhMinhRazorPages.DTOs;
+using NguyenKhanhMinhRazorPages.Entity;
 using NguyenKhanhMinhRazorPages.Services;
-using System;
-using System.Collections.Generic;
 
 namespace NguyenKhanhMinhRazorPages.Pages.NewsArticlePages
 {
