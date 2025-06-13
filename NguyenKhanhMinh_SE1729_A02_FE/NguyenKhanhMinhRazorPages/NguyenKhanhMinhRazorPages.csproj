@@ -20,16 +20,4 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="BusinessObjectsLayer">
-      <HintPath>..\..\NguyenKhanhMinh_SE1729_A01_BE\BusinessObjectsLayer\bin\Debug\net8.0\BusinessObjectsLayer.dll</HintPath>
-    </Reference>
-    <Reference Include="DAOsLayer">
-      <HintPath>..\..\NguyenKhanhMinh_SE1729_A01_BE\DAOsLayer\bin\Debug\net8.0\DAOsLayer.dll</HintPath>
-    </Reference>
-    <Reference Include="RepositoriesLayer">
-      <HintPath>..\..\NguyenKhanhMinh_SE1729_A01_BE\RepositoriesLayer\bin\Debug\net8.0\RepositoriesLayer.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
